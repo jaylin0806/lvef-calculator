@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
+<title>M-Mode LVEF 計算機</title>
+
+<!-- PWA -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1d4ed8">
+
+<!-- iOS home-screen support -->
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="LVEF">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+
+<link rel="icon" href="icons/icon-192.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="app-header">
+  <h1>M-Mode LVEF 計算機</h1>
+  <p class="subtitle">Teichholz・Quinones・Fractional Shortening</p>
+</header>
+
+<main>
+  <section class="card input-card">
+    <div class="unit-toggle" role="group" aria-label="量測單位">
+      <button type="button" class="unit-btn active" data-unit="cm">cm</button>
+      <button type="button" class="unit-btn" data-unit="mm">mm</button>
+    </div>
+
+    <div class="field">
+      <label for="lvidd">LVIDd<span class="field-hint">舒張末期內徑</span></label>
+      <input type="number" id="lvidd" inputmode="decimal" step="0.01" min="0" placeholder="0.00" autocomplete="off">
+      <span class="unit-label" id="unit-label-d">cm</span>
+    </div>
+
+    <div class="field">
+      <label for="lvids">LVIDs<span class="field-hint">收縮末期內徑</span></label>
+      <input type="number" id="lvids" inputmode="decimal" step="0.01" min="0" placeholder="0.00" autocomplete="off">
+      <span class="unit-label" id="unit-label-s">cm</span>
+    </div>
+
+    <p id="warning" class="warning" hidden></p>
+  </section>
+
+  <section class="results" id="results" hidden>
+
+    <article class="card result-card" id="card-teichholz">
+      <header class="result-header">
+        <h2>Teichholz</h2>
+        <span class="badge" id="badge-teichholz">--</span>
+      </header>
+      <p class="ef-value" id="value-teichholz">-- %</p>
+      <details>
+        <summary>公式與說明</summary>
+        <p class="formula">EDV = 7.0 / (2.4 + LVIDd) × LVIDd³<br>ESV = 7.0 / (2.4 + LVIDs) × LVIDs³<br>EF = (EDV − ESV) / EDV × 100%</p>
+        <p class="desc">假設左心室為旋轉橢圓體，由單一切面內徑推算容積，臨床上最常用的 M-mode EF 估算法。</p>
+        <p class="caveat">⚠ 局部室壁運動異常（RWMA）或心室幾何明顯變形（如擴大型心肌病、室壁瘤）時，準確度會明顯下降，應改用 Simpson's biplane 法評估。</p>
+      </details>
+    </article>
+
+    <article class="card result-card" id="card-quinones">
+      <header class="result-header">
+        <h2>Quinones（立方公式）</h2>
+        <span class="badge" id="badge-quinones">--</span>
+      </header>
+      <p class="ef-value" id="value-quinones">-- %</p>
+      <details>
+        <summary>公式與說明</summary>
+        <p class="formula">EF = (LVIDd³ − LVIDs³) / LVIDd³ × 100%</p>
+        <p class="desc">同樣假設正常橢圓幾何形狀，計算較 Teichholz 簡單，但未對內徑做幾何校正項，兩者數值會略有差異。</p>
+      </details>
+    </article>
+
+    <article class="card result-card" id="card-fs">
+      <header class="result-header">
+        <h2>Fractional Shortening</h2>
+        <span class="badge" id="badge-fs">--</span>
+      </header>
+      <p class="ef-value" id="value-fs">-- %</p>
+      <details>
+        <summary>公式與說明</summary>
+        <p class="formula">FS = (LVIDd − LVIDs) / LVIDd × 100%</p>
+        <p class="desc">非真正的 EF，而是內徑縮短率，僅反映心室中段收縮功能，常作為快速床邊篩檢的輔助指標。</p>
+      </details>
+    </article>
+
+  </section>
+</main>
+
+<footer class="app-footer">
+  <p>僅供臨床參考，不取代完整心臟超音波評估。</p>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>
