@@ -1,13 +1,19 @@
-const CACHE_NAME = 'lvef-calculator-v1';
+const CACHE_NAME = 'lvef-calculator-v2';
 const ASSETS = [
   './',
   './index.html',
   './style.css',
   './app.js',
+  './ocr.js',
   './manifest.json',
   './icons/icon-192.png',
   './icons/icon-512.png',
   './icons/apple-touch-icon.png',
+  './vendor/tesseract.min.js',
+  './vendor/worker.min.js',
+  './vendor/tesseract-core-simd-lstm.wasm.js',
+  './vendor/tesseract-core-simd-lstm.wasm',
+  './vendor/tessdata/eng.traineddata.gz',
 ];
 
 self.addEventListener('install', (event) => {

@@ -18,6 +18,9 @@
 
 <link rel="icon" href="icons/icon-192.png">
 <link rel="stylesheet" href="style.css">
+
+<!-- Preload OCR engine assets so they're cached for offline use -->
+<link rel="prefetch" href="vendor/tesseract.min.js">
 </head>
 <body>
 
@@ -27,6 +30,26 @@
 </header>
 
 <main>
+  <section class="card ocr-card">
+    <div class="ocr-header">
+      <h2>從超音波截圖辨識</h2>
+      <p class="field-hint">辨識在裝置本機完成，圖片不會上傳到任何伺服器</p>
+    </div>
+
+    <label class="ocr-upload-btn" for="ocr-file">
+      <span id="ocr-upload-label">選擇截圖</span>
+    </label>
+    <input type="file" id="ocr-file" accept="image/*" hidden>
+
+    <div class="ocr-preview-wrap" id="ocr-preview-wrap" hidden>
+      <img id="ocr-preview" alt="超音波截圖預覽">
+    </div>
+
+    <p class="ocr-status" id="ocr-status" hidden></p>
+
+    <div class="ocr-candidates" id="ocr-candidates" hidden></div>
+  </section>
+
   <section class="card input-card">
     <div class="unit-toggle" role="group" aria-label="量測單位">
       <button type="button" class="unit-btn active" data-unit="cm">cm</button>
@@ -97,6 +120,8 @@
   <p>僅供臨床參考，不取代完整心臟超音波評估。</p>
 </footer>
 
+<script src="vendor/tesseract.min.js"></script>
+<script src="ocr.js"></script>
 <script src="app.js"></script>
 </body>
 </html>
