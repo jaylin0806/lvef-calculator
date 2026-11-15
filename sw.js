@@ -1,4 +1,4 @@
-const CACHE_NAME = 'lvef-calculator-v5';
+const CACHE_NAME = 'lvef-calculator-v6';
 const ASSETS = [
   './',
   './index.html',
@@ -18,7 +18,11 @@ const ASSETS = [
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS))
+    caches.open(CACHE_NAME).then((cache) =>
+      // cache: 'reload' bypasses the browser's HTTP cache, so a new version
+      // never gets installed with stale copies of the files.
+      cache.addAll(ASSETS.map((url) => new Request(url, { cache: 'reload' })))
+    )
   );
   self.skipWaiting();
 });
@@ -32,15 +36,45 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
+// Large, rarely-changing files (OCR engine, icons) are served cache-first.
+// The app itself (HTML/JS/CSS/manifest) is network-first so updates show up
+// on the next launch, falling back to the cache when offline.
+function isStatic(url) {
+  return url.pathname.includes('/vendor/') || url.pathname.includes('/icons/');
+}
+
+async function networkFirst(request) {
+  const cache = await caches.open(CACHE_NAME);
+  try {
+    const response = await fetch(request, { cache: 'no-cache' });
+    if (response.ok) cache.put(request, response.clone());
+    return response;
+  } catch (err) {
+    const cached = await cache.match(request, { ignoreSearch: true });
+    if (cached) return cached;
+    if (request.mode === 'navigate') {
+      const shell = await cache.match('./index.html');
+      if (shell) return shell;
+    }
+    throw err;
+  }
+}
+
+async function cacheFirst(request) {
+  const cached = await caches.match(request);
+  if (cached) return cached;
+  const response = await fetch(request);
+  if (response.ok) {
+    const cache = await caches.open(CACHE_NAME);
+    cache.put(request, response.clone());
+  }
+  return response;
+}
+
 self.addEventListener('fetch', (event) => {
-  event.respondWith(
-    caches.match(event.request).then((cached) => {
-      if (cached) return cached;
-      return fetch(event.request).then((response) => {
-        const copy = response.clone();
-        caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
-        return response;
-      }).catch(() => cached);
-    })
-  );
+  const { request } = event;
+  if (request.method !== 'GET') return;
+  const url = new URL(request.url);
+  if (url.origin !== self.location.origin) return;
+  event.respondWith(isStatic(url) ? cacheFirst(request) : networkFirst(request));
 });
