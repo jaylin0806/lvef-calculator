@@ -62,8 +62,8 @@
   // phase so the cleaned value is what every other listener sees.
   document.addEventListener('input', (e) => {
     const el = e.target;
-    if (!(el instanceof HTMLInputElement) || !/^(decimal|numeric)$/.test(el.inputMode)) return;
-    const allowDot = el.inputMode === 'decimal';
+    if (!(el instanceof HTMLInputElement) || !el.dataset.numeric) return;
+    const allowDot = el.dataset.numeric === 'decimal';
     let v = el.value.replace(/,/g, '.').replace(allowDot ? /[^0-9.]/g : /[^0-9]/g, '');
     const firstDot = v.indexOf('.');
     if (firstDot !== -1) v = v.slice(0, firstDot + 1) + v.slice(firstDot + 1).replace(/\./g, '');

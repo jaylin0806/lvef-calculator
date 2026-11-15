@@ -67,13 +67,13 @@
 
       <div class="field">
         <label for="lvidd">LVIDd<span class="field-hint">舒張末期內徑</span></label>
-        <input type="text" id="lvidd" inputmode="decimal" pattern="[0-9]*[.]?[0-9]*" placeholder="0.00" autocomplete="off">
+        <input type="text" id="lvidd" data-numeric="decimal" inputmode="decimal" pattern="[0-9]*[.]?[0-9]*" placeholder="0.00" autocomplete="off">
         <span class="unit-label" id="unit-label-d">cm</span>
       </div>
 
       <div class="field">
         <label for="lvids">LVIDs<span class="field-hint">收縮末期內徑</span></label>
-        <input type="text" id="lvids" inputmode="decimal" pattern="[0-9]*[.]?[0-9]*" placeholder="0.00" autocomplete="off">
+        <input type="text" id="lvids" data-numeric="decimal" inputmode="decimal" pattern="[0-9]*[.]?[0-9]*" placeholder="0.00" autocomplete="off">
         <span class="unit-label" id="unit-label-s">cm</span>
       </div>
 
@@ -144,7 +144,7 @@
       <h2>TAPSE<span class="field-hint">三尖瓣環收縮期位移・RV 收縮功能（M-mode）</span></h2>
       <div class="field">
         <label for="tapse">TAPSE</label>
-        <input type="text" id="tapse" class="metric-input" inputmode="decimal" pattern="[0-9]*[.]?[0-9]*" placeholder="0" autocomplete="off">
+        <input type="text" id="tapse" class="metric-input" data-numeric="decimal" inputmode="decimal" pattern="[0-9]*[.]?[0-9]*" placeholder="0" autocomplete="off">
         <span class="unit-label">mm</span>
       </div>
       <p class="metric-result"><span class="badge" id="badge-tapse" hidden></span><span class="metric-ref">異常：&lt; 17 mm</span></p>
@@ -154,7 +154,7 @@
       <h2>左心房前後徑<span class="field-hint">PLAX M-mode，收縮末期量測</span></h2>
       <div class="field">
         <label for="la">LA</label>
-        <input type="text" id="la" class="metric-input" inputmode="decimal" pattern="[0-9]*[.]?[0-9]*" placeholder="0.00" autocomplete="off">
+        <input type="text" id="la" class="metric-input" data-numeric="decimal" inputmode="decimal" pattern="[0-9]*[.]?[0-9]*" placeholder="0.00" autocomplete="off">
         <span class="unit-label">cm</span>
       </div>
       <p class="metric-result"><span class="badge" id="badge-la" hidden></span><span class="metric-ref">擴大：&gt; 4.0 cm（不分性別）</span></p>
@@ -164,12 +164,12 @@
       <h2>下腔靜脈（IVC）<span class="field-hint">肋下切面，距右心房入口約 1–2 cm 處</span></h2>
       <div class="field">
         <label for="ivc-max">最大直徑<span class="field-hint">呼氣時</span></label>
-        <input type="text" id="ivc-max" class="metric-input" inputmode="decimal" pattern="[0-9]*[.]?[0-9]*" placeholder="0.00" autocomplete="off">
+        <input type="text" id="ivc-max" class="metric-input" data-numeric="decimal" inputmode="decimal" pattern="[0-9]*[.]?[0-9]*" placeholder="0.00" autocomplete="off">
         <span class="unit-label">cm</span>
       </div>
       <div class="field">
         <label for="ivc-min">最小直徑<span class="field-hint">吸氣或 sniff 時</span></label>
-        <input type="text" id="ivc-min" class="metric-input" inputmode="decimal" pattern="[0-9]*[.]?[0-9]*" placeholder="0.00" autocomplete="off">
+        <input type="text" id="ivc-min" class="metric-input" data-numeric="decimal" inputmode="decimal" pattern="[0-9]*[.]?[0-9]*" placeholder="0.00" autocomplete="off">
         <span class="unit-label">cm</span>
       </div>
       <p class="warning" id="warn-ivc" hidden></p>
@@ -186,12 +186,12 @@
       <h2>二尖瓣血流 E/A<span class="field-hint">心尖四腔切面，PW 取樣於二尖瓣葉尖端</span></h2>
       <div class="field">
         <label for="mv-e">E 波</label>
-        <input type="text" id="mv-e" class="metric-input" inputmode="decimal" pattern="[0-9]*[.]?[0-9]*" placeholder="0" autocomplete="off">
+        <input type="text" id="mv-e" class="metric-input" data-numeric="decimal" inputmode="decimal" pattern="[0-9]*[.]?[0-9]*" placeholder="0" autocomplete="off">
         <span class="unit-label">cm/s</span>
       </div>
       <div class="field">
         <label for="mv-a">A 波</label>
-        <input type="text" id="mv-a" class="metric-input" inputmode="decimal" pattern="[0-9]*[.]?[0-9]*" placeholder="0" autocomplete="off">
+        <input type="text" id="mv-a" class="metric-input" data-numeric="decimal" inputmode="decimal" pattern="[0-9]*[.]?[0-9]*" placeholder="0" autocomplete="off">
         <span class="unit-label">cm/s</span>
       </div>
       <div class="metric-outputs">
@@ -205,17 +205,17 @@
       <h2>LVOT VTI・SV・CO<span class="field-hint">直徑：PLAX 收縮中期；VTI：心尖五腔切面 PW</span></h2>
       <div class="field">
         <label for="lvot-vti">LVOT VTI</label>
-        <input type="text" id="lvot-vti" class="metric-input" inputmode="decimal" pattern="[0-9]*[.]?[0-9]*" placeholder="0.0" autocomplete="off">
+        <input type="text" id="lvot-vti" class="metric-input" data-numeric="decimal" inputmode="decimal" pattern="[0-9]*[.]?[0-9]*" placeholder="0.0" autocomplete="off">
         <span class="unit-label">cm</span>
       </div>
       <div class="field">
         <label for="lvot-d">LVOT 直徑</label>
-        <input type="text" id="lvot-d" class="metric-input" inputmode="decimal" pattern="[0-9]*[.]?[0-9]*" placeholder="0.00" autocomplete="off">
+        <input type="text" id="lvot-d" class="metric-input" data-numeric="decimal" inputmode="decimal" pattern="[0-9]*[.]?[0-9]*" placeholder="0.00" autocomplete="off">
         <span class="unit-label">cm</span>
       </div>
       <div class="field">
         <label for="hr">心跳<span class="field-hint">計算 CO 用</span></label>
-        <input type="text" id="hr" class="metric-input" inputmode="numeric" pattern="[0-9]*" placeholder="0" autocomplete="off">
+        <input type="text" id="hr" class="metric-input" data-numeric="integer" inputmode="numeric" pattern="[0-9]*" placeholder="0" autocomplete="off">
         <span class="unit-label">bpm</span>
       </div>
       <p class="warning" id="warn-lvot" hidden></p>
@@ -234,19 +234,19 @@
       <h2>Vena contracta<span class="field-hint">彩色都卜勒，逆流噴流最窄處寬度</span></h2>
       <div class="field">
         <label for="vc-mr">MR</label>
-        <input type="text" id="vc-mr" class="metric-input" inputmode="decimal" pattern="[0-9]*[.]?[0-9]*" placeholder="0.00" autocomplete="off">
+        <input type="text" id="vc-mr" class="metric-input" data-numeric="decimal" inputmode="decimal" pattern="[0-9]*[.]?[0-9]*" placeholder="0.00" autocomplete="off">
         <span class="unit-label">cm</span>
       </div>
       <p class="metric-result"><span class="badge" id="badge-vc-mr" hidden></span><span class="metric-ref">輕度 &lt; 0.3・重度 ≥ 0.7 cm</span></p>
       <div class="field">
         <label for="vc-ar">AR</label>
-        <input type="text" id="vc-ar" class="metric-input" inputmode="decimal" pattern="[0-9]*[.]?[0-9]*" placeholder="0.00" autocomplete="off">
+        <input type="text" id="vc-ar" class="metric-input" data-numeric="decimal" inputmode="decimal" pattern="[0-9]*[.]?[0-9]*" placeholder="0.00" autocomplete="off">
         <span class="unit-label">cm</span>
       </div>
       <p class="metric-result"><span class="badge" id="badge-vc-ar" hidden></span><span class="metric-ref">輕度 &lt; 0.3・重度 &gt; 0.6 cm</span></p>
       <div class="field">
         <label for="vc-tr">TR</label>
-        <input type="text" id="vc-tr" class="metric-input" inputmode="decimal" pattern="[0-9]*[.]?[0-9]*" placeholder="0.00" autocomplete="off">
+        <input type="text" id="vc-tr" class="metric-input" data-numeric="decimal" inputmode="decimal" pattern="[0-9]*[.]?[0-9]*" placeholder="0.00" autocomplete="off">
         <span class="unit-label">cm</span>
       </div>
       <p class="metric-result"><span class="badge" id="badge-vc-tr" hidden></span><span class="metric-ref">輕度 &lt; 0.3・重度 ≥ 0.7 cm</span></p>
@@ -271,6 +271,7 @@
           <li><b>LVIDs</b>（收縮末期內徑）：取左心室內徑最小處。</li>
           <li>兩個數值都填好後會自動計算；LVIDs 必須小於 LVIDd。</li>
           <li>用上方的 <b>cm / mm</b> 切換單位，已輸入的數值會自動換算。</li>
+          <li>在 iPad 上點數值欄位會出現 App 內建的數字鍵盤；按「下一格」可直接跳到下一個欄位。</li>
         </ul>
       </section>
 
@@ -346,12 +347,13 @@
 
 <footer class="app-footer">
   <p>僅供臨床參考，不取代完整心臟超音波評估。</p>
-  <p class="app-version">版本 v11</p>
+  <p class="app-version">版本 v12</p>
 </footer>
 
 <script src="vendor/tesseract.min.js"></script>
 <script src="ocr.js"></script>
 <script src="app.js"></script>
 <script src="metrics.js"></script>
+<script src="keypad.js"></script>
 </body>
 </html>
