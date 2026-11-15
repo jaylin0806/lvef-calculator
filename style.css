@@ -485,6 +485,11 @@ details[open] summary::before {
   cursor: pointer;
 }
 
+.app-credit {
+  margin: 8px 0 0;
+  font-weight: 600;
+}
+
 .app-version {
   margin-top: 4px;
   opacity: 0.7;

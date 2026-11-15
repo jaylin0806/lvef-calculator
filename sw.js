@@ -1,4 +1,4 @@
-const CACHE_NAME = 'lvef-calculator-v12';
+const CACHE_NAME = 'lvef-calculator-v13';
 const ASSETS = [
   './',
   './index.html',
