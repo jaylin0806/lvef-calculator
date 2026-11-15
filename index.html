@@ -69,6 +69,11 @@
     </div>
 
     <p id="warning" class="warning" hidden></p>
+
+    <div class="save-row" id="save-row" hidden>
+      <input type="text" id="save-note" maxlength="40" placeholder="備註（選填，勿填個資）" autocomplete="off">
+      <button type="button" id="save-btn" class="save-btn">記錄</button>
+    </div>
   </section>
 
   <section class="results" id="results" hidden>
@@ -120,7 +125,7 @@
       <h2>計算紀錄</h2>
       <button type="button" id="history-clear" class="link-btn">全部清除</button>
     </header>
-    <p class="field-hint">每次計算結果會自動儲存，保留最近 10 筆，只存在這台裝置上。點選一筆可重新載入數值。</p>
+    <p class="field-hint">按「記錄」儲存結果，保留最近 10 筆，只存在這台裝置上。點選一筆可重新載入數值。</p>
     <ul class="history-list" id="history-list"></ul>
   </section>
 </main>

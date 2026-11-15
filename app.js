@@ -7,20 +7,19 @@
   const warningEl = document.getElementById('warning');
   const resultsEl = document.getElementById('results');
 
+  const saveRow = document.getElementById('save-row');
+  const saveNote = document.getElementById('save-note');
+  const saveBtn = document.getElementById('save-btn');
   const historyCard = document.getElementById('history-card');
   const historyList = document.getElementById('history-list');
   const historyClear = document.getElementById('history-clear');
 
   let unit = 'cm'; // 'cm' | 'mm', current display unit
-  let lastResult = null; // most recent valid calculation, for auto-saving
-  let saveTimer = null;
+  let lastResult = null; // most recent valid calculation, for saving
 
   // ---- Local persistence (device-only, never leaves the browser) ----
   const STORE_KEY = 'lvef-calculator:v1';
   const MAX_HISTORY = 10;
-  // Wait for typing to settle so intermediate values ("4" on the way to
-  // "4.85") aren't recorded as separate results.
-  const AUTOSAVE_DELAY_MS = 1500;
 
   function loadStore() {
     try {
@@ -98,25 +97,11 @@
     cardEl.classList.add(band.cls);
   }
 
-  function computeAll(d, s) {
-    // Teichholz
-    const edv = (7.0 / (2.4 + d)) * Math.pow(d, 3);
-    const esv = (7.0 / (2.4 + s)) * Math.pow(s, 3);
-    const teichholz = ((edv - esv) / edv) * 100;
-
-    // Quinones cube formula
-    const quinones = ((Math.pow(d, 3) - Math.pow(s, 3)) / Math.pow(d, 3)) * 100;
-
-    // Fractional shortening
-    const fs = ((d - s) / d) * 100;
-
-    return { d, s, teichholz, quinones, fs };
-  }
-
   function calculate() {
     const { dRaw, sRaw } = getInputs();
 
     lastResult = null;
+    saveRow.hidden = true;
 
     if (Number.isNaN(dRaw) || Number.isNaN(sRaw)) {
       resultsEl.hidden = true;
@@ -141,14 +126,28 @@
     const d = toCm(dRaw);
     const s = toCm(sRaw);
 
-    const result = computeAll(d, s);
-    renderResult('teichholz', result.teichholz, EF_BANDS);
-    renderResult('quinones', result.quinones, EF_BANDS);
-    renderResult('fs', result.fs, FS_BANDS);
+    // Teichholz
+    const edv = (7.0 / (2.4 + d)) * Math.pow(d, 3);
+    const esv = (7.0 / (2.4 + s)) * Math.pow(s, 3);
+    const teichholzEF = ((edv - esv) / edv) * 100;
+
+    // Quinones cube formula
+    const quinonesEF = ((Math.pow(d, 3) - Math.pow(s, 3)) / Math.pow(d, 3)) * 100;
+
+    // Fractional shortening
+    const fs = ((d - s) / d) * 100;
+
+    renderResult('teichholz', teichholzEF, EF_BANDS);
+    renderResult('quinones', quinonesEF, EF_BANDS);
+    renderResult('fs', fs, FS_BANDS);
 
     resultsEl.hidden = false;
 
-    lastResult = result;
+    lastResult = { d, s, teichholz: teichholzEF, quinones: quinonesEF, fs };
+    saveRow.hidden = false;
+    const saved = isSameAsLatest(lastResult);
+    saveBtn.disabled = saved;
+    saveBtn.textContent = saved ? '已記錄' : '記錄';
   }
 
   // ---- History ----
@@ -191,8 +190,7 @@
         const toUnit = (cm) => String(unit === 'mm' ? round2(cm * 10) : round2(cm));
         ddInput.value = toUnit(entry.d);
         dsInput.value = toUnit(entry.s);
-        base = snapshot(entry);
-        onInput({ autosave: false });
+        onInput();
         window.scrollTo({ top: 0, behavior: 'smooth' });
       });
 
@@ -212,90 +210,34 @@
     });
   }
 
-  function sameValue(a, b) {
-    return Math.abs(a - b) < 1e-6;
+  // Same diameters as the most recent record: nothing new to save
+  function isSameAsLatest(r) {
+    const latest = store.history[0];
+    return !!latest && Math.abs(latest.d - r.d) < 1e-6 && Math.abs(latest.s - r.s) < 1e-6;
   }
 
-  // The values currently on screen as last saved / restored / loaded.
-  let base = null; // { d, s }
-  const EDIT_WINDOW_MS = 60 * 1000;
-
-  function snapshot(h) {
-    return { d: h.d, s: h.s };
-  }
-
-  function countChanged(a, b) {
-    return (sameValue(a.d, b.d) ? 0 : 1) + (sameValue(a.s, b.s) ? 0 : 1);
-  }
-
-  function newEntry(r, prev) {
-    const changedOne = prev && countChanged(prev, r) === 1;
-    return {
+  function saveCurrent() {
+    if (!lastResult || isSameAsLatest(lastResult)) return;
+    const entry = {
       id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
       ts: Date.now(),
-      ...r,
-      // Which single field differs from the previous values, if only one
-      // does: a possibly half-entered measurement.
-      partial: changedOne ? (sameValue(prev.d, r.d) ? 's' : 'd') : null,
-      prev: changedOne ? snapshot(prev) : null,
+      note: saveNote.value.trim(),
+      ...lastResult,
     };
-  }
-
-  // Every settled result is saved. The previous measurement's values stay in
-  // the fields, so entering a new one passes through a mixed state (new
-  // LVIDd + old LVIDs). Measurements are entered LVIDd first, so:
-  //   - Only LVIDd changed → a new entry, provisional until LVIDs follows;
-  //     further edits within a minute update that entry instead of adding.
-  //   - Only LVIDs changed within a minute of saving → a correction to the
-  //     entry just saved, updated in place.
-  //   - Both changed → a new entry.
-  function saveCurrent() {
-    clearTimeout(saveTimer);
-    saveTimer = null;
-    if (!lastResult) return;
-    const r = lastResult;
-    if (base && countChanged(base, r) === 0) return;
-
-    const latest = store.history[0];
-    const editable = latest && base && countChanged(base, latest) === 0 &&
-      Date.now() - latest.ts < EDIT_WINDOW_MS;
-    const onlyS = latest && sameValue(latest.d, r.d) && !sameValue(latest.s, r.s);
-
-    if (editable && latest.partial === 'd') {
-      // Finishing (or re-editing) a half-entered measurement
-      if (countChanged(latest.prev, r) === 0) {
-        store.history.shift();
-      } else {
-        Object.assign(latest, newEntry(r, latest.prev), { id: latest.id });
-      }
-    } else if (editable && onlyS) {
-      // Correcting LVIDs of the entry just saved
-      Object.assign(latest, r, { ts: Date.now() });
-    } else {
-      store.history.unshift(newEntry(r, base));
-      store.history = store.history.slice(0, MAX_HISTORY);
-    }
-    base = snapshot(r);
+    store.history.unshift(entry);
+    store.history = store.history.slice(0, MAX_HISTORY);
     persist();
     renderHistory();
+    saveNote.value = '';
+    saveBtn.disabled = true;
+    saveBtn.textContent = '已記錄';
   }
 
-  function scheduleSave() {
-    clearTimeout(saveTimer);
-    saveTimer = lastResult ? setTimeout(saveCurrent, AUTOSAVE_DELAY_MS) : null;
-  }
-
-  function flushPendingSave() {
-    if (saveTimer) saveCurrent();
-  }
-
-  function onInput({ autosave = true } = {}) {
+  function onInput() {
     store.lvidd = ddInput.value;
     store.lvids = dsInput.value;
     persist();
     calculate();
-    if (autosave) scheduleSave();
-    else clearTimeout(saveTimer);
   }
 
   function convertInputValue(input, fromUnit, toUnit) {
@@ -323,7 +265,7 @@
     });
 
     store.unit = unit;
-    onInput({ autosave: false });
+    onInput();
     renderHistory();
   }
 
@@ -331,16 +273,12 @@
     btn.addEventListener('click', () => setUnit(btn.dataset.unit));
   });
 
-  ddInput.addEventListener('input', () => onInput());
-  dsInput.addEventListener('input', () => onInput());
-  // Save right away when the user leaves a field or the app, instead of
-  // losing a pending result.
-  ddInput.addEventListener('blur', flushPendingSave);
-  dsInput.addEventListener('blur', flushPendingSave);
-  document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'hidden') flushPendingSave();
+  ddInput.addEventListener('input', onInput);
+  dsInput.addEventListener('input', onInput);
+  saveBtn.addEventListener('click', saveCurrent);
+  saveNote.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') saveCurrent();
   });
-  window.addEventListener('pagehide', flushPendingSave);
   historyClear.addEventListener('click', () => {
     if (!confirm('確定要清除所有計算紀錄嗎？此動作無法復原。')) return;
     store.history = [];
@@ -356,7 +294,6 @@
   ddInput.value = store.lvidd;
   dsInput.value = store.lvids;
   calculate();
-  if (lastResult) base = snapshot(lastResult);
   renderHistory();
 
   if ('serviceWorker' in navigator) {
