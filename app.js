@@ -7,7 +7,42 @@
   const warningEl = document.getElementById('warning');
   const resultsEl = document.getElementById('results');
 
+  const saveRow = document.getElementById('save-row');
+  const saveNote = document.getElementById('save-note');
+  const saveBtn = document.getElementById('save-btn');
+  const historyCard = document.getElementById('history-card');
+  const historyList = document.getElementById('history-list');
+  const historyClear = document.getElementById('history-clear');
+
   let unit = 'cm'; // 'cm' | 'mm', current display unit
+  let lastResult = null; // most recent valid calculation, for saving
+
+  // ---- Local persistence (device-only, never leaves the browser) ----
+  const STORE_KEY = 'lvef-calculator:v1';
+  const MAX_HISTORY = 100;
+
+  function loadStore() {
+    try {
+      const data = JSON.parse(localStorage.getItem(STORE_KEY));
+      if (data && typeof data === 'object') {
+        return {
+          unit: data.unit === 'mm' ? 'mm' : 'cm',
+          lvidd: typeof data.lvidd === 'string' ? data.lvidd : '',
+          lvids: typeof data.lvids === 'string' ? data.lvids : '',
+          history: Array.isArray(data.history) ? data.history : [],
+        };
+      }
+    } catch (e) { /* storage unavailable or corrupt */ }
+    return { unit: 'cm', lvidd: '', lvids: '', history: [] };
+  }
+
+  const store = loadStore();
+
+  function persist() {
+    try {
+      localStorage.setItem(STORE_KEY, JSON.stringify(store));
+    } catch (e) { /* private mode / quota: keep working without memory */ }
+  }
 
   // EF severity bands (simplified, gender-neutral clinical convention)
   const EF_BANDS = [
@@ -65,6 +100,9 @@
   function calculate() {
     const { dRaw, sRaw } = getInputs();
 
+    lastResult = null;
+    saveRow.hidden = true;
+
     if (Number.isNaN(dRaw) || Number.isNaN(sRaw)) {
       resultsEl.hidden = true;
       setWarning(null);
@@ -104,6 +142,95 @@
     renderResult('fs', fs, FS_BANDS);
 
     resultsEl.hidden = false;
+
+    lastResult = { d, s, teichholz: teichholzEF, quinones: quinonesEF, fs };
+    saveRow.hidden = false;
+    saveBtn.disabled = false;
+    saveBtn.textContent = '儲存結果';
+  }
+
+  // ---- History ----
+  function formatTime(ts) {
+    const dt = new Date(ts);
+    const pad = (n) => String(n).padStart(2, '0');
+    return `${dt.getFullYear()}/${pad(dt.getMonth() + 1)}/${pad(dt.getDate())} ${pad(dt.getHours())}:${pad(dt.getMinutes())}`;
+  }
+
+  function formatLength(cm) {
+    return unit === 'mm' ? `${round2(cm * 10)} mm` : `${round2(cm).toFixed(2)} cm`;
+  }
+
+  function renderHistory() {
+    historyList.innerHTML = '';
+    historyCard.hidden = store.history.length === 0;
+
+    store.history.forEach((entry) => {
+      const li = document.createElement('li');
+      li.className = `history-item ${classify(entry.teichholz, EF_BANDS).cls}`;
+
+      const load = document.createElement('button');
+      load.type = 'button';
+      load.className = 'history-load';
+
+      const main = document.createElement('div');
+      main.className = 'history-main';
+      const ef = document.createElement('span');
+      ef.textContent = `EF ${entry.teichholz.toFixed(1)}%`;
+      const dims = document.createElement('span');
+      dims.textContent = `${formatLength(entry.d)} / ${formatLength(entry.s)}`;
+      main.append(ef, dims);
+
+      const sub = document.createElement('div');
+      sub.className = 'history-sub';
+      sub.textContent = formatTime(entry.ts) + (entry.note ? `・${entry.note}` : '');
+
+      load.append(main, sub);
+      load.addEventListener('click', () => {
+        const toUnit = (cm) => String(unit === 'mm' ? round2(cm * 10) : round2(cm));
+        ddInput.value = toUnit(entry.d);
+        dsInput.value = toUnit(entry.s);
+        onInput();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+
+      const del = document.createElement('button');
+      del.type = 'button';
+      del.className = 'history-del';
+      del.setAttribute('aria-label', '刪除這筆紀錄');
+      del.textContent = '×';
+      del.addEventListener('click', () => {
+        store.history = store.history.filter((h) => h.id !== entry.id);
+        persist();
+        renderHistory();
+      });
+
+      li.append(load, del);
+      historyList.appendChild(li);
+    });
+  }
+
+  function saveCurrent() {
+    if (!lastResult) return;
+    const entry = {
+      id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+      ts: Date.now(),
+      note: saveNote.value.trim(),
+      ...lastResult,
+    };
+    store.history.unshift(entry);
+    store.history = store.history.slice(0, MAX_HISTORY);
+    persist();
+    renderHistory();
+    saveNote.value = '';
+    saveBtn.disabled = true;
+    saveBtn.textContent = '已儲存';
+  }
+
+  function onInput() {
+    store.lvidd = ddInput.value;
+    store.lvids = dsInput.value;
+    persist();
+    calculate();
   }
 
   function convertInputValue(input, fromUnit, toUnit) {
@@ -130,15 +257,37 @@
       btn.classList.toggle('active', btn.dataset.unit === unit);
     });
 
-    calculate();
+    store.unit = unit;
+    onInput();
+    renderHistory();
   }
 
   unitButtons.forEach(btn => {
     btn.addEventListener('click', () => setUnit(btn.dataset.unit));
   });
 
-  ddInput.addEventListener('input', calculate);
-  dsInput.addEventListener('input', calculate);
+  ddInput.addEventListener('input', onInput);
+  dsInput.addEventListener('input', onInput);
+  saveBtn.addEventListener('click', saveCurrent);
+  saveNote.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') saveCurrent();
+  });
+  historyClear.addEventListener('click', () => {
+    if (!confirm('確定要清除所有計算紀錄嗎？此動作無法復原。')) return;
+    store.history = [];
+    persist();
+    renderHistory();
+  });
+
+  // Restore last session
+  unit = store.unit;
+  unitLabelD.textContent = unit;
+  unitLabelS.textContent = unit;
+  unitButtons.forEach(btn => btn.classList.toggle('active', btn.dataset.unit === unit));
+  ddInput.value = store.lvidd;
+  dsInput.value = store.lvids;
+  calculate();
+  renderHistory();
 
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
