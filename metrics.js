@@ -73,6 +73,38 @@
       : { label: '正常', cls: BAND.normal });
   }
 
+  // ---- Aortic root (sex-neutral: > 4.0 cm dilated) ----
+  function calcAo() {
+    const v = num('ao');
+    setBadge($('badge-ao'), v == null ? null
+      : v > 4.0 ? { label: '擴大', cls: BAND.moderate }
+      : { label: '正常', cls: BAND.normal });
+  }
+
+  // ---- LA/Ao ratio (reference: ~1.0–1.3 normal, > 1.5 LA enlargement) ----
+  function calcLaAo() {
+    const la = num('la');
+    const ao = num('ao');
+    if (la == null || ao == null) {
+      setRow('row-la-ao', null);
+      return;
+    }
+    const ratio = round(la / ao, 2);
+    setRow('row-la-ao', ratio.toFixed(2), ratio > 1.5
+      ? { label: 'LA 擴大', cls: BAND.moderate }
+      : { label: '正常', cls: BAND.normal });
+  }
+
+  // ---- Aortic cusp separation (reference: >= 1.5 cm excludes severe AS,
+  //      < 0.8 cm suggests severe AS; also small with low output) ----
+  function calcAcs() {
+    const v = num('acs');
+    setBadge($('badge-acs'), v == null ? null
+      : v < 0.8 ? { label: '明顯降低', cls: BAND.severe }
+      : v < 1.5 ? { label: '降低', cls: BAND.mild }
+      : { label: '正常', cls: BAND.normal });
+  }
+
   // ---- IVC → RAP (ASE 2010 / 2015) ----
   function calcIvc() {
     const max = num('ivc-max');
@@ -186,7 +218,10 @@
 
   function calcAll() {
     calcTapse();
+    calcAo();
     calcLa();
+    calcLaAo();
+    calcAcs();
     calcIvc();
     calcEa();
     calcLvot();
