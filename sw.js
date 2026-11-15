@@ -1,10 +1,11 @@
-const CACHE_NAME = 'lvef-calculator-v10';
+const CACHE_NAME = 'lvef-calculator-v12';
 const ASSETS = [
   './',
   './index.html',
   './style.css',
   './app.js',
   './metrics.js',
+  './keypad.js',
   './ocr.js',
   './manifest.json',
   './icons/icon-192.png',

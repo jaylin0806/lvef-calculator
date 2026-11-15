@@ -55,6 +55,25 @@
 
   // Classify the value as displayed (1 decimal), so a result shown as
   // "50.0 %" is never labelled differently from what the reader sees.
+  // Numeric fields use type="text" + inputmode so phones show a digits-only
+  // keypad (type="number" often brings up the full keyboard on iOS). Since a
+  // text field accepts anything, keep only digits and one decimal point;
+  // a comma (some keypads' decimal key) becomes a point. Runs in the capture
+  // phase so the cleaned value is what every other listener sees.
+  document.addEventListener('input', (e) => {
+    const el = e.target;
+    if (!(el instanceof HTMLInputElement) || !el.dataset.numeric) return;
+    const allowDot = el.dataset.numeric === 'decimal';
+    let v = el.value.replace(/,/g, '.').replace(allowDot ? /[^0-9.]/g : /[^0-9]/g, '');
+    const firstDot = v.indexOf('.');
+    if (firstDot !== -1) v = v.slice(0, firstDot + 1) + v.slice(firstDot + 1).replace(/\./g, '');
+    if (v !== el.value) {
+      const pos = el.selectionStart - (el.value.length - v.length);
+      el.value = v;
+      try { el.setSelectionRange(pos, pos); } catch (err) { /* not focused */ }
+    }
+  }, true);
+
   function classify(value, bands) {
     const shown = Math.round(value * 10) / 10;
     return bands.find(b => b.test(shown));
