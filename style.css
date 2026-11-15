@@ -611,3 +611,16 @@ details[open] summary::before {
 .dot.severity-mild { background: var(--yellow); }
 .dot.severity-moderate { background: var(--orange); }
 .dot.severity-severe { background: var(--red); }
+
+.help-sub {
+  margin: 14px 0 0;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.help-note {
+  margin: 6px 0 0;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}

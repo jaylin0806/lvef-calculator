@@ -44,24 +44,28 @@
     } catch (e) { /* private mode / quota: keep working without memory */ }
   }
 
-  // EF severity bands (simplified, gender-neutral clinical convention)
+  // EF categories per the heart-failure classification of the 2021 ESC
+  // and 2022 AHA/ACC/HFSA guidelines: ≤40% reduced (HFrEF range),
+  // 41–49% mildly reduced (HFmrEF), ≥50% preserved (HFpEF). Sex-neutral.
   const EF_BANDS = [
-    { min: 55, label: '正常', cls: 'severity-normal' },
-    { min: 41, label: '輕度降低', cls: 'severity-mild' },
-    { min: 30, label: '中度降低', cls: 'severity-moderate' },
-    { min: -Infinity, label: '重度降低', cls: 'severity-severe' },
+    { test: (v) => v >= 50, label: 'EF 保留', cls: 'severity-normal' },
+    { test: (v) => v > 40, label: 'EF 輕度降低', cls: 'severity-mild' },
+    { test: () => true, label: 'EF 降低', cls: 'severity-severe' },
   ];
 
-  // Fractional shortening severity bands
+  // Fractional shortening bands (ASE 2005; no heart-failure equivalent)
   const FS_BANDS = [
-    { min: 25, label: '正常', cls: 'severity-normal' },
-    { min: 20, label: '輕度降低', cls: 'severity-mild' },
-    { min: 15, label: '中度降低', cls: 'severity-moderate' },
-    { min: -Infinity, label: '重度降低', cls: 'severity-severe' },
+    { test: (v) => v >= 25, label: '正常', cls: 'severity-normal' },
+    { test: (v) => v >= 20, label: '輕度降低', cls: 'severity-mild' },
+    { test: (v) => v >= 15, label: '中度降低', cls: 'severity-moderate' },
+    { test: () => true, label: '重度降低', cls: 'severity-severe' },
   ];
 
+  // Classify the value as displayed (1 decimal), so a result shown as
+  // "50.0 %" is never labelled differently from what the reader sees.
   function classify(value, bands) {
-    return bands.find(b => value >= b.min);
+    const shown = Math.round(value * 10) / 10;
+    return bands.find(b => b.test(shown));
   }
 
   function toCm(value) {
