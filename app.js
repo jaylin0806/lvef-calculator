@@ -19,7 +19,7 @@
 
   // ---- Local persistence (device-only, never leaves the browser) ----
   const STORE_KEY = 'lvef-calculator:v1';
-  const MAX_HISTORY = 100;
+  const MAX_HISTORY = 10;
 
   function loadStore() {
     try {
@@ -29,7 +29,7 @@
           unit: data.unit === 'mm' ? 'mm' : 'cm',
           lvidd: typeof data.lvidd === 'string' ? data.lvidd : '',
           lvids: typeof data.lvids === 'string' ? data.lvids : '',
-          history: Array.isArray(data.history) ? data.history : [],
+          history: Array.isArray(data.history) ? data.history.slice(0, MAX_HISTORY) : [],
         };
       }
     } catch (e) { /* storage unavailable or corrupt */ }
@@ -145,8 +145,9 @@
 
     lastResult = { d, s, teichholz: teichholzEF, quinones: quinonesEF, fs };
     saveRow.hidden = false;
-    saveBtn.disabled = false;
-    saveBtn.textContent = '儲存結果';
+    const saved = isSameAsLatest(lastResult);
+    saveBtn.disabled = saved;
+    saveBtn.textContent = saved ? '已記錄' : '記錄';
   }
 
   // ---- History ----
@@ -209,8 +210,14 @@
     });
   }
 
+  // Same diameters as the most recent record: nothing new to save
+  function isSameAsLatest(r) {
+    const latest = store.history[0];
+    return !!latest && Math.abs(latest.d - r.d) < 1e-6 && Math.abs(latest.s - r.s) < 1e-6;
+  }
+
   function saveCurrent() {
-    if (!lastResult) return;
+    if (!lastResult || isSameAsLatest(lastResult)) return;
     const entry = {
       id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
       ts: Date.now(),
@@ -223,7 +230,7 @@
     renderHistory();
     saveNote.value = '';
     saveBtn.disabled = true;
-    saveBtn.textContent = '已儲存';
+    saveBtn.textContent = '已記錄';
   }
 
   function onInput() {
