@@ -118,8 +118,13 @@
     return [...new Set(nums)].sort((a, b) => b - a);
   }
 
-  function fillField(input, value) {
-    input.value = value;
+  // Candidates are read in cm (as shown on the scan). Convert to whatever
+  // unit the calculator is currently set to before filling the field.
+  function fillField(input, cm) {
+    const activeUnit = document.querySelector('.unit-btn.active');
+    const unit = activeUnit ? activeUnit.dataset.unit : 'cm';
+    const value = unit === 'mm' ? Math.round(cm * 10 * 10) / 10 : cm;
+    input.value = unit === 'mm' ? String(value) : value.toFixed(2);
     input.dispatchEvent(new Event('input', { bubbles: true }));
   }
 
@@ -146,12 +151,12 @@
       const btnD = document.createElement('button');
       btnD.type = 'button';
       btnD.textContent = '→ LVIDd';
-      btnD.addEventListener('click', () => fillField(ddInput, n.toFixed(2)));
+      btnD.addEventListener('click', () => fillField(ddInput, n));
 
       const btnS = document.createElement('button');
       btnS.type = 'button';
       btnS.textContent = '→ LVIDs';
-      btnS.addEventListener('click', () => fillField(dsInput, n.toFixed(2)));
+      btnS.addEventListener('click', () => fillField(dsInput, n));
 
       chip.appendChild(btnD);
       chip.appendChild(btnS);

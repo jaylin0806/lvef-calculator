@@ -44,24 +44,20 @@
     } catch (e) { /* private mode / quota: keep working without memory */ }
   }
 
-  // EF severity bands (simplified, gender-neutral clinical convention)
+  // EF categories per the heart-failure classification of the 2021 ESC
+  // and 2022 AHA/ACC/HFSA guidelines: ≤40% reduced (HFrEF range),
+  // 41–49% mildly reduced (HFmrEF), ≥50% preserved (HFpEF). Sex-neutral.
   const EF_BANDS = [
-    { min: 55, label: '正常', cls: 'severity-normal' },
-    { min: 41, label: '輕度降低', cls: 'severity-mild' },
-    { min: 30, label: '中度降低', cls: 'severity-moderate' },
-    { min: -Infinity, label: '重度降低', cls: 'severity-severe' },
+    { test: (v) => v >= 50, label: 'EF 保留', cls: 'severity-normal' },
+    { test: (v) => v > 40, label: 'EF 輕度降低', cls: 'severity-mild' },
+    { test: () => true, label: 'EF 降低', cls: 'severity-severe' },
   ];
 
-  // Fractional shortening severity bands
-  const FS_BANDS = [
-    { min: 25, label: '正常', cls: 'severity-normal' },
-    { min: 20, label: '輕度降低', cls: 'severity-mild' },
-    { min: 15, label: '中度降低', cls: 'severity-moderate' },
-    { min: -Infinity, label: '重度降低', cls: 'severity-severe' },
-  ];
-
+  // Classify the value as displayed (1 decimal), so a result shown as
+  // "50.0 %" is never labelled differently from what the reader sees.
   function classify(value, bands) {
-    return bands.find(b => value >= b.min);
+    const shown = Math.round(value * 10) / 10;
+    return bands.find(b => b.test(shown));
   }
 
   function toCm(value) {
@@ -90,10 +86,11 @@
     const cardEl = document.getElementById(`card-${prefix}`);
 
     valueEl.textContent = `${efValue.toFixed(1)} %`;
+    cardEl.classList.remove('severity-normal', 'severity-mild', 'severity-moderate', 'severity-severe');
+    if (!bands) return; // shown without a grade
+
     const band = classify(efValue, bands);
     badgeEl.textContent = band.label;
-
-    cardEl.classList.remove('severity-normal', 'severity-mild', 'severity-moderate', 'severity-severe');
     cardEl.classList.add(band.cls);
   }
 
@@ -139,7 +136,7 @@
 
     renderResult('teichholz', teichholzEF, EF_BANDS);
     renderResult('quinones', quinonesEF, EF_BANDS);
-    renderResult('fs', fs, FS_BANDS);
+    renderResult('fs', fs, null); // FS: value only, no grading
 
     resultsEl.hidden = false;
 
@@ -295,6 +292,21 @@
   dsInput.value = store.lvids;
   calculate();
   renderHistory();
+
+  // ---- Help sheet ----
+  const helpSheet = document.getElementById('help-sheet');
+  const helpOpen = document.getElementById('help-open');
+  const helpClose = document.getElementById('help-close');
+
+  helpOpen.addEventListener('click', () => {
+    helpSheet.showModal();
+    helpSheet.querySelector('.help-body').scrollTop = 0;
+  });
+  helpClose.addEventListener('click', () => helpSheet.close());
+  // Tapping the dimmed area outside the sheet closes it
+  helpSheet.addEventListener('click', (e) => {
+    if (e.target === helpSheet) helpSheet.close();
+  });
 
   if ('serviceWorker' in navigator) {
     // Reload once when a new version takes over, so the update shows
