@@ -31,103 +31,228 @@
 </header>
 
 <main>
-  <section class="card ocr-card">
-    <div class="ocr-header">
-      <h2>從超音波截圖辨識</h2>
-      <p class="field-hint">辨識在裝置本機完成，圖片不會上傳到任何伺服器</p>
-    </div>
+  <nav class="tab-bar" role="tablist" aria-label="參數分類">
+    <button type="button" class="tab-btn active" role="tab" data-tab="lv" aria-selected="true">LV</button>
+    <button type="button" class="tab-btn" role="tab" data-tab="rv" aria-selected="false">右心・LA</button>
+    <button type="button" class="tab-btn" role="tab" data-tab="flow" aria-selected="false">血流</button>
+    <button type="button" class="tab-btn" role="tab" data-tab="valve" aria-selected="false">瓣膜</button>
+  </nav>
 
-    <label class="ocr-upload-btn" for="ocr-file">
-      <span id="ocr-upload-label">選擇截圖</span>
-    </label>
-    <input type="file" id="ocr-file" accept="image/*" hidden>
+  <div class="tab-panel" id="panel-lv" role="tabpanel">
+    <section class="card ocr-card">
+      <div class="ocr-header">
+        <h2>從超音波截圖辨識</h2>
+        <p class="field-hint">辨識在裝置本機完成，圖片不會上傳到任何伺服器</p>
+      </div>
 
-    <div class="ocr-preview-wrap" id="ocr-preview-wrap" hidden>
-      <img id="ocr-preview" alt="超音波截圖預覽">
-    </div>
+      <label class="ocr-upload-btn" for="ocr-file">
+        <span id="ocr-upload-label">選擇截圖</span>
+      </label>
+      <input type="file" id="ocr-file" accept="image/*" hidden>
 
-    <p class="ocr-status" id="ocr-status" hidden></p>
+      <div class="ocr-preview-wrap" id="ocr-preview-wrap" hidden>
+        <img id="ocr-preview" alt="超音波截圖預覽">
+      </div>
 
-    <div class="ocr-candidates" id="ocr-candidates" hidden></div>
-  </section>
+      <p class="ocr-status" id="ocr-status" hidden></p>
 
-  <section class="card input-card">
-    <div class="unit-toggle" role="group" aria-label="量測單位">
-      <button type="button" class="unit-btn active" data-unit="cm">cm</button>
-      <button type="button" class="unit-btn" data-unit="mm">mm</button>
-    </div>
+      <div class="ocr-candidates" id="ocr-candidates" hidden></div>
+    </section>
 
-    <div class="field">
-      <label for="lvidd">LVIDd<span class="field-hint">舒張末期內徑</span></label>
-      <input type="number" id="lvidd" inputmode="decimal" step="0.01" min="0" placeholder="0.00" autocomplete="off">
-      <span class="unit-label" id="unit-label-d">cm</span>
-    </div>
+    <section class="card input-card">
+      <div class="unit-toggle" role="group" aria-label="量測單位">
+        <button type="button" class="unit-btn active" data-unit="cm">cm</button>
+        <button type="button" class="unit-btn" data-unit="mm">mm</button>
+      </div>
 
-    <div class="field">
-      <label for="lvids">LVIDs<span class="field-hint">收縮末期內徑</span></label>
-      <input type="number" id="lvids" inputmode="decimal" step="0.01" min="0" placeholder="0.00" autocomplete="off">
-      <span class="unit-label" id="unit-label-s">cm</span>
-    </div>
+      <div class="field">
+        <label for="lvidd">LVIDd<span class="field-hint">舒張末期內徑</span></label>
+        <input type="number" id="lvidd" inputmode="decimal" step="0.01" min="0" placeholder="0.00" autocomplete="off">
+        <span class="unit-label" id="unit-label-d">cm</span>
+      </div>
 
-    <p id="warning" class="warning" hidden></p>
+      <div class="field">
+        <label for="lvids">LVIDs<span class="field-hint">收縮末期內徑</span></label>
+        <input type="number" id="lvids" inputmode="decimal" step="0.01" min="0" placeholder="0.00" autocomplete="off">
+        <span class="unit-label" id="unit-label-s">cm</span>
+      </div>
 
-    <div class="save-row" id="save-row" hidden>
-      <input type="text" id="save-note" maxlength="40" placeholder="備註（選填，勿填個資）" autocomplete="off">
-      <button type="button" id="save-btn" class="save-btn">記錄</button>
-    </div>
-  </section>
+      <p id="warning" class="warning" hidden></p>
 
-  <section class="results" id="results" hidden>
+      <div class="save-row" id="save-row" hidden>
+        <input type="text" id="save-note" maxlength="40" placeholder="備註（選填，勿填個資）" autocomplete="off">
+        <button type="button" id="save-btn" class="save-btn">記錄</button>
+      </div>
+    </section>
 
-    <article class="card result-card" id="card-teichholz">
-      <header class="result-header">
-        <h2>Teichholz</h2>
-        <span class="badge" id="badge-teichholz">--</span>
+    <section class="results" id="results" hidden>
+
+      <article class="card result-card" id="card-teichholz">
+        <header class="result-header">
+          <h2>Teichholz</h2>
+          <span class="badge" id="badge-teichholz">--</span>
+        </header>
+        <p class="ef-value" id="value-teichholz">-- %</p>
+        <details>
+          <summary>公式與說明</summary>
+          <p class="formula">EDV = 7.0 / (2.4 + LVIDd) × LVIDd³<br>ESV = 7.0 / (2.4 + LVIDs) × LVIDs³<br>EF = (EDV − ESV) / EDV × 100%</p>
+          <p class="desc">假設左心室為旋轉橢圓體，由單一切面內徑推算容積，臨床上最常用的 M-mode EF 估算法。</p>
+          <p class="caveat">⚠ 局部室壁運動異常（RWMA）或心室幾何明顯變形（如擴大型心肌病、室壁瘤）時，準確度會明顯下降，應改用 Simpson's biplane 法評估。</p>
+        </details>
+      </article>
+
+      <article class="card result-card" id="card-quinones">
+        <header class="result-header">
+          <h2>Quinones（立方公式）</h2>
+          <span class="badge" id="badge-quinones">--</span>
+        </header>
+        <p class="ef-value" id="value-quinones">-- %</p>
+        <details>
+          <summary>公式與說明</summary>
+          <p class="formula">EF = (LVIDd³ − LVIDs³) / LVIDd³ × 100%</p>
+          <p class="desc">同樣假設正常橢圓幾何形狀，計算較 Teichholz 簡單，但未對內徑做幾何校正項，兩者數值會略有差異。</p>
+        </details>
+      </article>
+
+      <article class="card result-card" id="card-fs">
+        <header class="result-header">
+          <h2>Fractional Shortening</h2>
+        </header>
+        <p class="ef-value" id="value-fs">-- %</p>
+        <details>
+          <summary>公式與說明</summary>
+          <p class="formula">FS = (LVIDd − LVIDs) / LVIDd × 100%</p>
+          <p class="desc">非真正的 EF，而是內徑縮短率，僅反映心室中段收縮功能，常作為快速床邊篩檢的輔助指標。</p>
+        </details>
+      </article>
+
+    </section>
+
+    <section class="card history-card" id="history-card" hidden>
+      <header class="history-header">
+        <h2>計算紀錄</h2>
+        <button type="button" id="history-clear" class="link-btn">全部清除</button>
       </header>
-      <p class="ef-value" id="value-teichholz">-- %</p>
-      <details>
-        <summary>公式與說明</summary>
-        <p class="formula">EDV = 7.0 / (2.4 + LVIDd) × LVIDd³<br>ESV = 7.0 / (2.4 + LVIDs) × LVIDs³<br>EF = (EDV − ESV) / EDV × 100%</p>
-        <p class="desc">假設左心室為旋轉橢圓體，由單一切面內徑推算容積，臨床上最常用的 M-mode EF 估算法。</p>
-        <p class="caveat">⚠ 局部室壁運動異常（RWMA）或心室幾何明顯變形（如擴大型心肌病、室壁瘤）時，準確度會明顯下降，應改用 Simpson's biplane 法評估。</p>
-      </details>
-    </article>
+      <p class="field-hint">按「記錄」儲存結果，保留最近 10 筆，只存在這台裝置上。點選一筆可重新載入數值。</p>
+      <ul class="history-list" id="history-list"></ul>
+    </section>
+  </div>
 
-    <article class="card result-card" id="card-quinones">
-      <header class="result-header">
-        <h2>Quinones（立方公式）</h2>
-        <span class="badge" id="badge-quinones">--</span>
-      </header>
-      <p class="ef-value" id="value-quinones">-- %</p>
-      <details>
-        <summary>公式與說明</summary>
-        <p class="formula">EF = (LVIDd³ − LVIDs³) / LVIDd³ × 100%</p>
-        <p class="desc">同樣假設正常橢圓幾何形狀，計算較 Teichholz 簡單，但未對內徑做幾何校正項，兩者數值會略有差異。</p>
-      </details>
-    </article>
+  <!-- ===== RV / LA / IVC ===== -->
+  <div class="tab-panel" id="panel-rv" role="tabpanel" hidden>
+    <section class="card metric-card">
+      <h2>TAPSE<span class="field-hint">三尖瓣環收縮期位移・RV 收縮功能（M-mode）</span></h2>
+      <div class="field">
+        <label for="tapse">TAPSE</label>
+        <input type="number" id="tapse" class="metric-input" inputmode="decimal" step="0.1" min="0" placeholder="0" autocomplete="off">
+        <span class="unit-label">mm</span>
+      </div>
+      <p class="metric-result"><span class="badge" id="badge-tapse" hidden></span><span class="metric-ref">異常：&lt; 17 mm</span></p>
+    </section>
 
-    <article class="card result-card" id="card-fs">
-      <header class="result-header">
-        <h2>Fractional Shortening</h2>
-      </header>
-      <p class="ef-value" id="value-fs">-- %</p>
-      <details>
-        <summary>公式與說明</summary>
-        <p class="formula">FS = (LVIDd − LVIDs) / LVIDd × 100%</p>
-        <p class="desc">非真正的 EF，而是內徑縮短率，僅反映心室中段收縮功能，常作為快速床邊篩檢的輔助指標。</p>
-      </details>
-    </article>
+    <section class="card metric-card">
+      <h2>左心房前後徑<span class="field-hint">PLAX M-mode，收縮末期量測</span></h2>
+      <div class="field">
+        <label for="la">LA</label>
+        <input type="number" id="la" class="metric-input" inputmode="decimal" step="0.01" min="0" placeholder="0.00" autocomplete="off">
+        <span class="unit-label">cm</span>
+      </div>
+      <p class="metric-result"><span class="badge" id="badge-la" hidden></span><span class="metric-ref">擴大：&gt; 4.0 cm（不分性別）</span></p>
+    </section>
 
-  </section>
+    <section class="card metric-card">
+      <h2>下腔靜脈（IVC）<span class="field-hint">肋下切面，距右心房入口約 1–2 cm 處</span></h2>
+      <div class="field">
+        <label for="ivc-max">最大直徑<span class="field-hint">呼氣時</span></label>
+        <input type="number" id="ivc-max" class="metric-input" inputmode="decimal" step="0.01" min="0" placeholder="0.00" autocomplete="off">
+        <span class="unit-label">cm</span>
+      </div>
+      <div class="field">
+        <label for="ivc-min">最小直徑<span class="field-hint">吸氣或 sniff 時</span></label>
+        <input type="number" id="ivc-min" class="metric-input" inputmode="decimal" step="0.01" min="0" placeholder="0.00" autocomplete="off">
+        <span class="unit-label">cm</span>
+      </div>
+      <p class="warning" id="warn-ivc" hidden></p>
+      <div class="metric-outputs">
+        <div class="metric-row" id="row-ivc-collapse" hidden><span class="metric-label">塌陷率</span><span class="metric-value"></span></div>
+        <div class="metric-row" id="row-ivc-rap" hidden><span class="metric-label">估計 RAP</span><span class="metric-value"></span><span class="badge"></span></div>
+      </div>
+    </section>
+  </div>
 
-  <section class="card history-card" id="history-card" hidden>
-    <header class="history-header">
-      <h2>計算紀錄</h2>
-      <button type="button" id="history-clear" class="link-btn">全部清除</button>
-    </header>
-    <p class="field-hint">按「記錄」儲存結果，保留最近 10 筆，只存在這台裝置上。點選一筆可重新載入數值。</p>
-    <ul class="history-list" id="history-list"></ul>
-  </section>
+  <!-- ===== Flow ===== -->
+  <div class="tab-panel" id="panel-flow" role="tabpanel" hidden>
+    <section class="card metric-card">
+      <h2>二尖瓣血流 E/A<span class="field-hint">心尖四腔切面，PW 取樣於二尖瓣葉尖端</span></h2>
+      <div class="field">
+        <label for="mv-e">E 波</label>
+        <input type="number" id="mv-e" class="metric-input" inputmode="decimal" step="1" min="0" placeholder="0" autocomplete="off">
+        <span class="unit-label">cm/s</span>
+      </div>
+      <div class="field">
+        <label for="mv-a">A 波</label>
+        <input type="number" id="mv-a" class="metric-input" inputmode="decimal" step="1" min="0" placeholder="0" autocomplete="off">
+        <span class="unit-label">cm/s</span>
+      </div>
+      <div class="metric-outputs">
+        <div class="metric-row" id="row-ea" hidden><span class="metric-label">E/A</span><span class="metric-value"></span><span class="badge"></span></div>
+      </div>
+      <p class="metric-note" id="note-ea" hidden></p>
+      <p class="metric-ref-block">依 ASE/EACVI 2016，適用於 <b>EF 降低或有心肌疾病</b>者。EF 正常者只看 E/A 不足以判斷，需要 e'。</p>
+    </section>
+
+    <section class="card metric-card">
+      <h2>LVOT VTI・SV・CO<span class="field-hint">直徑：PLAX 收縮中期；VTI：心尖五腔切面 PW</span></h2>
+      <div class="field">
+        <label for="lvot-vti">LVOT VTI</label>
+        <input type="number" id="lvot-vti" class="metric-input" inputmode="decimal" step="0.1" min="0" placeholder="0.0" autocomplete="off">
+        <span class="unit-label">cm</span>
+      </div>
+      <div class="field">
+        <label for="lvot-d">LVOT 直徑</label>
+        <input type="number" id="lvot-d" class="metric-input" inputmode="decimal" step="0.01" min="0" placeholder="0.00" autocomplete="off">
+        <span class="unit-label">cm</span>
+      </div>
+      <div class="field">
+        <label for="hr">心跳<span class="field-hint">計算 CO 用</span></label>
+        <input type="number" id="hr" class="metric-input" inputmode="numeric" step="1" min="0" placeholder="0" autocomplete="off">
+        <span class="unit-label">bpm</span>
+      </div>
+      <p class="warning" id="warn-lvot" hidden></p>
+      <div class="metric-outputs">
+        <div class="metric-row" id="row-vti" hidden><span class="metric-label">VTI</span><span class="metric-value"></span><span class="badge"></span></div>
+        <div class="metric-row" id="row-sv" hidden><span class="metric-label">SV</span><span class="metric-value"></span><span class="badge"></span></div>
+        <div class="metric-row" id="row-co" hidden><span class="metric-label">CO</span><span class="metric-value"></span><span class="badge"></span></div>
+      </div>
+      <p class="metric-ref-block">SV = π × (LVOT 直徑 / 2)² × VTI；CO = SV × 心跳。<br>參考：VTI 18–22 cm、SV 60–100 mL、CO 4–8 L/min。LVOT 直徑的誤差會被平方放大，請仔細量測。</p>
+    </section>
+  </div>
+
+  <!-- ===== Valves ===== -->
+  <div class="tab-panel" id="panel-valve" role="tabpanel" hidden>
+    <section class="card metric-card">
+      <h2>Vena contracta<span class="field-hint">彩色都卜勒，逆流噴流最窄處寬度</span></h2>
+      <div class="field">
+        <label for="vc-mr">MR</label>
+        <input type="number" id="vc-mr" class="metric-input" inputmode="decimal" step="0.01" min="0" placeholder="0.00" autocomplete="off">
+        <span class="unit-label">cm</span>
+      </div>
+      <p class="metric-result"><span class="badge" id="badge-vc-mr" hidden></span><span class="metric-ref">輕度 &lt; 0.3・重度 ≥ 0.7 cm</span></p>
+      <div class="field">
+        <label for="vc-ar">AR</label>
+        <input type="number" id="vc-ar" class="metric-input" inputmode="decimal" step="0.01" min="0" placeholder="0.00" autocomplete="off">
+        <span class="unit-label">cm</span>
+      </div>
+      <p class="metric-result"><span class="badge" id="badge-vc-ar" hidden></span><span class="metric-ref">輕度 &lt; 0.3・重度 &gt; 0.6 cm</span></p>
+      <div class="field">
+        <label for="vc-tr">TR</label>
+        <input type="number" id="vc-tr" class="metric-input" inputmode="decimal" step="0.01" min="0" placeholder="0.00" autocomplete="off">
+        <span class="unit-label">cm</span>
+      </div>
+      <p class="metric-result"><span class="badge" id="badge-vc-tr" hidden></span><span class="metric-ref">輕度 &lt; 0.3・重度 ≥ 0.7 cm</span></p>
+      <p class="metric-ref-block">依 ASE 2017。介於輕度與重度之間為中度；指引建議綜合多項參數判斷逆流嚴重度，不要只看單一數值。</p>
+    </section>
+  </div>
 </main>
 
 <dialog class="help-sheet" id="help-sheet" aria-labelledby="help-title">
@@ -193,17 +318,40 @@
           <li>上次輸入的數值和單位會自動保留，下次開啟時還原。</li>
         </ul>
       </section>
+      <section>
+        <h3>5. 其他參數</h3>
+        <ul>
+          <li>上方分頁切換：<b>LV</b>（EF、截圖辨識、紀錄）、<b>右心・LA</b>（TAPSE、LA、IVC）、<b>血流</b>、<b>瓣膜</b>。</li>
+          <li>這些參數上次輸入的值會自動保留，但「記錄」只儲存 LV 的量測。</li>
+        </ul>
+        <table class="help-table">
+          <thead>
+            <tr><th>參數</th><th>切點</th><th>來源</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>TAPSE</td><td>&lt; 17 mm 為 RV 收縮功能降低</td><td>ASE/EACVI 2015</td></tr>
+            <tr><td>LA 前後徑</td><td>&gt; 4.0 cm 擴大（女性正常上限為 3.8 cm）</td><td>ASE 2005</td></tr>
+            <tr><td>IVC → RAP</td><td>≤ 2.1 cm 且塌陷 &gt; 50% → 3 mmHg<br>&gt; 2.1 cm 且塌陷 &lt; 50% → 15 mmHg<br>其他 → 8 mmHg</td><td>ASE 2010／2015</td></tr>
+            <tr><td>E/A</td><td>≤ 0.8 且 E ≤ 50 cm/s → Grade I<br>≥ 2 → Grade III<br>其他需 E/e'、TR、LAVI</td><td>ASE/EACVI 2016</td></tr>
+            <tr><td>LVOT VTI</td><td>18–22 cm；&lt; 15 cm 提示低心輸出</td><td>文獻參考值</td></tr>
+            <tr><td>SV／CO</td><td>SV 60–100 mL；CO 4–8 L/min</td><td>參考範圍</td></tr>
+            <tr><td>Vena contracta</td><td>MR、TR：輕度 &lt; 0.3、重度 ≥ 0.7 cm<br>AR：輕度 &lt; 0.3、重度 &gt; 0.6 cm</td><td>ASE 2017</td></tr>
+          </tbody>
+        </table>
+        <p class="help-note">E/A 分級只適用於 EF 降低或有心肌疾病者。手持式超音波量測誤差較大，異常結果請安排完整心臟超音波確認。</p>
+      </section>
     </div>
   </div>
 </dialog>
 
 <footer class="app-footer">
   <p>僅供臨床參考，不取代完整心臟超音波評估。</p>
-  <p class="app-version">版本 v9</p>
+  <p class="app-version">版本 v10</p>
 </footer>
 
 <script src="vendor/tesseract.min.js"></script>
 <script src="ocr.js"></script>
 <script src="app.js"></script>
+<script src="metrics.js"></script>
 </body>
 </html>

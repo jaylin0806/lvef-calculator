@@ -624,3 +624,119 @@ details[open] summary::before {
   color: var(--text-muted);
   line-height: 1.5;
 }
+
+/* ---- Tabs ---- */
+.tab-bar {
+  position: sticky;
+  top: env(safe-area-inset-top, 0px);
+  z-index: 5;
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  background: var(--gray-bg);
+  border-radius: 12px;
+  box-shadow: 0 0 0 6px #f9fafb;
+}
+
+.tab-btn {
+  flex: 1 1 auto;
+  min-width: 0;
+  border: none;
+  background: transparent;
+  padding: 9px 8px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  border-radius: 9px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.tab-btn.active {
+  background: #fff;
+  color: var(--blue);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+
+.tab-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ---- Metric cards ---- */
+.metric-card h2 {
+  margin: 0 0 4px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  display: flex;
+  flex-direction: column;
+}
+
+.metric-card h2 .field-hint {
+  margin-top: 2px;
+}
+
+.metric-result {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 6px;
+  min-height: 24px;
+}
+
+.metric-ref {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.metric-card .badge.severity-normal { background: var(--green-bg); color: var(--green); }
+.metric-card .badge.severity-mild { background: var(--yellow-bg); color: var(--yellow); }
+.metric-card .badge.severity-moderate { background: var(--orange-bg); color: var(--orange); }
+.metric-card .badge.severity-severe { background: var(--red-bg); color: var(--red); }
+
+.metric-outputs {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.metric-outputs:empty { display: none; }
+
+.metric-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: var(--gray-bg);
+  border-radius: 10px;
+}
+
+.metric-label {
+  font-weight: 600;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  min-width: 64px;
+}
+
+.metric-value {
+  flex: 1;
+  font-size: 1.25rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.metric-note {
+  margin: 8px 0 0;
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+.metric-ref-block {
+  margin: 12px 0 0;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
