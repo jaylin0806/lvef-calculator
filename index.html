@@ -25,6 +25,7 @@
 <body>
 
 <header class="app-header">
+  <button type="button" class="help-btn" id="help-open" aria-label="使用說明" aria-haspopup="dialog">?</button>
   <h1>M-Mode LVEF 計算機</h1>
   <p class="subtitle">Teichholz・Quinones・Fractional Shortening</p>
 </header>
@@ -130,9 +131,74 @@
   </section>
 </main>
 
+<dialog class="help-sheet" id="help-sheet" aria-labelledby="help-title">
+  <div class="help-inner">
+    <header class="help-top">
+      <h2 id="help-title">使用說明</h2>
+      <button type="button" class="help-close" id="help-close" aria-label="關閉說明">×</button>
+    </header>
+
+    <div class="help-body">
+      <section>
+        <h3>1. 輸入量測值</h3>
+        <ul>
+          <li>在胸骨旁長軸（PLAX）M-mode 上，於二尖瓣葉尖端水平、垂直左心室長軸量測。</li>
+          <li><b>LVIDd</b>（舒張末期內徑）：取左心室內徑最大處，約在 ECG QRS 起始時。</li>
+          <li><b>LVIDs</b>（收縮末期內徑）：取左心室內徑最小處。</li>
+          <li>兩個數值都填好後會自動計算；LVIDs 必須小於 LVIDd。</li>
+          <li>用上方的 <b>cm / mm</b> 切換單位，已輸入的數值會自動換算。</li>
+        </ul>
+      </section>
+
+      <section>
+        <h3>2. 截圖辨識</h3>
+        <ul>
+          <li>點「選擇截圖」，拍照或從相簿選擇有量測數值的超音波畫面。</li>
+          <li>辨識在裝置本機完成，圖片不會上傳。第一次使用需下載辨識引擎（約 9MB），之後可離線使用。</li>
+          <li>辨識出的候選數值會列在下方，對照原圖點「→ LVIDd」或「→ LVIDs」填入。</li>
+          <li><b>辨識可能出錯</b>（例如小數點被卡尺線擋住），填入後務必與原圖核對。</li>
+          <li>直接截圖、數字清楚沒被遮擋的畫面較容易辨識成功；翻拍螢幕的照片效果較差。</li>
+        </ul>
+      </section>
+
+      <section>
+        <h3>3. 看結果</h3>
+        <ul>
+          <li><b>Teichholz</b>：臨床最常用的 M-mode EF 估算法。</li>
+          <li><b>Quinones</b>（立方公式）：較簡化，數值會與 Teichholz 略有差異。</li>
+          <li><b>Fractional Shortening</b>：內徑縮短率，不是真正的 EF。</li>
+          <li>各方法的公式在結果卡片的「公式與說明」裡。</li>
+        </ul>
+        <table class="help-table">
+          <thead>
+            <tr><th>分級</th><th>EF</th><th>FS</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><span class="dot severity-normal"></span>正常</td><td>≥ 55%</td><td>≥ 25%</td></tr>
+            <tr><td><span class="dot severity-mild"></span>輕度降低</td><td>41–54%</td><td>20–24%</td></tr>
+            <tr><td><span class="dot severity-moderate"></span>中度降低</td><td>30–40%</td><td>15–19%</td></tr>
+            <tr><td><span class="dot severity-severe"></span>重度降低</td><td>&lt; 30%</td><td>&lt; 15%</td></tr>
+          </tbody>
+        </table>
+        <p class="caveat">⚠ 有局部室壁運動異常，或心室形狀明顯改變（如擴大型心肌病、室壁瘤）時，M-mode 估算會不準，應改用 Simpson's biplane 法評估。</p>
+      </section>
+
+      <section>
+        <h3>4. 計算紀錄</h3>
+        <ul>
+          <li>算出結果後按「<b>記錄</b>」儲存，可加簡短備註（請勿填寫病人姓名、病歷號等個資）。</li>
+          <li>保留最近 10 筆，只存在這台裝置上；刪除 App 或清除瀏覽器資料時會一併清除。</li>
+          <li>點一筆紀錄可重新載入數值；按 × 刪除單筆，或按「全部清除」。</li>
+          <li>上次輸入的數值和單位會自動保留，下次開啟時還原。</li>
+        </ul>
+      </section>
+    </div>
+  </div>
+</dialog>
+
 <footer class="app-footer">
   <p>僅供臨床參考，不取代完整心臟超音波評估。</p>
-  <p class="app-version">版本 v6</p>
+  <p class="app-version">版本 v7</p>
 </footer>
 
 <script src="vendor/tesseract.min.js"></script>

@@ -296,6 +296,21 @@
   calculate();
   renderHistory();
 
+  // ---- Help sheet ----
+  const helpSheet = document.getElementById('help-sheet');
+  const helpOpen = document.getElementById('help-open');
+  const helpClose = document.getElementById('help-close');
+
+  helpOpen.addEventListener('click', () => {
+    helpSheet.showModal();
+    helpSheet.querySelector('.help-body').scrollTop = 0;
+  });
+  helpClose.addEventListener('click', () => helpSheet.close());
+  // Tapping the dimmed area outside the sheet closes it
+  helpSheet.addEventListener('click', (e) => {
+    if (e.target === helpSheet) helpSheet.close();
+  });
+
   if ('serviceWorker' in navigator) {
     // Reload once when a new version takes over, so the update shows
     // immediately instead of on some later launch. Skip the very first
