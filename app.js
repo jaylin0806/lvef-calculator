@@ -297,8 +297,25 @@
   renderHistory();
 
   if ('serviceWorker' in navigator) {
+    // Reload once when a new version takes over, so the update shows
+    // immediately instead of on some later launch. Skip the very first
+    // install (no previous controller), which needs no reload.
+    const hadController = !!navigator.serviceWorker.controller;
+    let reloading = false;
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (!hadController || reloading) return;
+      reloading = true;
+      window.location.reload();
+    });
+
     window.addEventListener('load', () => {
-      navigator.serviceWorker.register('sw.js').catch(() => {});
+      navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' }).then((reg) => {
+        // Home-screen apps are often resumed rather than relaunched, which
+        // skips the browser's own update check, so check on every return.
+        document.addEventListener('visibilitychange', () => {
+          if (document.visibilityState === 'visible') reg.update().catch(() => {});
+        });
+      }).catch(() => {});
     });
   }
 })();
