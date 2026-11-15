@@ -53,14 +53,6 @@
     { test: () => true, label: 'EF 降低', cls: 'severity-severe' },
   ];
 
-  // Fractional shortening bands (ASE 2005; no heart-failure equivalent)
-  const FS_BANDS = [
-    { test: (v) => v >= 25, label: '正常', cls: 'severity-normal' },
-    { test: (v) => v >= 20, label: '輕度降低', cls: 'severity-mild' },
-    { test: (v) => v >= 15, label: '中度降低', cls: 'severity-moderate' },
-    { test: () => true, label: '重度降低', cls: 'severity-severe' },
-  ];
-
   // Classify the value as displayed (1 decimal), so a result shown as
   // "50.0 %" is never labelled differently from what the reader sees.
   function classify(value, bands) {
@@ -94,10 +86,11 @@
     const cardEl = document.getElementById(`card-${prefix}`);
 
     valueEl.textContent = `${efValue.toFixed(1)} %`;
+    cardEl.classList.remove('severity-normal', 'severity-mild', 'severity-moderate', 'severity-severe');
+    if (!bands) return; // shown without a grade
+
     const band = classify(efValue, bands);
     badgeEl.textContent = band.label;
-
-    cardEl.classList.remove('severity-normal', 'severity-mild', 'severity-moderate', 'severity-severe');
     cardEl.classList.add(band.cls);
   }
 
@@ -143,7 +136,7 @@
 
     renderResult('teichholz', teichholzEF, EF_BANDS);
     renderResult('quinones', quinonesEF, EF_BANDS);
-    renderResult('fs', fs, FS_BANDS);
+    renderResult('fs', fs, null); // FS: value only, no grading
 
     resultsEl.hidden = false;
 

@@ -109,7 +109,6 @@
     <article class="card result-card" id="card-fs">
       <header class="result-header">
         <h2>Fractional Shortening</h2>
-        <span class="badge" id="badge-fs">--</span>
       </header>
       <p class="ef-value" id="value-fs">-- %</p>
       <details>
@@ -155,7 +154,7 @@
         <ul>
           <li>點「選擇截圖」，拍照或從相簿選擇有量測數值的超音波畫面。</li>
           <li>辨識在裝置本機完成，圖片不會上傳。第一次使用需下載辨識引擎（約 9MB），之後可離線使用。</li>
-          <li>辨識出的候選數值會列在下方，對照原圖點「→ LVIDd」或「→ LVIDs」填入。</li>
+          <li>辨識出的候選數值會列在下方（以 cm 顯示），對照原圖點「→ LVIDd」或「→ LVIDs」填入；若目前是 mm，會自動換算。</li>
           <li><b>辨識可能出錯</b>（例如小數點被卡尺線擋住），填入後務必與原圖核對。</li>
           <li>直接截圖、數字清楚沒被遮擋的畫面較容易辨識成功；翻拍螢幕的照片效果較差。</li>
         </ul>
@@ -166,7 +165,7 @@
         <ul>
           <li><b>Teichholz</b>：臨床最常用的 M-mode EF 估算法。</li>
           <li><b>Quinones</b>（立方公式）：較簡化，數值會與 Teichholz 略有差異。</li>
-          <li><b>Fractional Shortening</b>：內徑縮短率，不是真正的 EF。</li>
+          <li><b>Fractional Shortening</b>：內徑縮短率，不是真正的 EF，只顯示數值、不分級。</li>
           <li>各方法的公式在結果卡片的「公式與說明」裡。</li>
         </ul>
         <p class="help-sub">EF 分類（依 2021 ESC 與 2022 AHA/ACC/HFSA 心衰竭指引，不分性別）</p>
@@ -182,18 +181,6 @@
         </table>
         <p class="help-note">心衰竭的診斷還需要症狀、徵候與其他檢查；EF 分類本身不等於診斷。</p>
 
-        <p class="help-sub">FS 分級（ASE 2005）</p>
-        <table class="help-table">
-          <thead>
-            <tr><th>分級</th><th>FS</th></tr>
-          </thead>
-          <tbody>
-            <tr><td><span class="dot severity-normal"></span>正常</td><td>≥ 25%</td></tr>
-            <tr><td><span class="dot severity-mild"></span>輕度降低</td><td>20–24%</td></tr>
-            <tr><td><span class="dot severity-moderate"></span>中度降低</td><td>15–19%</td></tr>
-            <tr><td><span class="dot severity-severe"></span>重度降低</td><td>&lt; 15%</td></tr>
-          </tbody>
-        </table>
         <p class="caveat">⚠ 有局部室壁運動異常，或心室形狀明顯改變（如擴大型心肌病、室壁瘤）時，M-mode 估算會不準，應改用 Simpson's biplane 法評估。</p>
       </section>
 
@@ -212,7 +199,7 @@
 
 <footer class="app-footer">
   <p>僅供臨床參考，不取代完整心臟超音波評估。</p>
-  <p class="app-version">版本 v8</p>
+  <p class="app-version">版本 v9</p>
 </footer>
 
 <script src="vendor/tesseract.min.js"></script>
